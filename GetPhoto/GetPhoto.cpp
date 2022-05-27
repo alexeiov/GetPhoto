@@ -1,11 +1,117 @@
 ﻿// GetPhoto.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 
+#define IBPP_WINDOWS
 #include <iostream>
+#include <ibpp.h>
+#include <all_in_one.cpp>
+#include <fstream>
+#include <clocale>
+
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	int assetId = 0;
+	
+	string srv("192.168.115.202");
+	string pth("F:\\database\\5829_Schekinoazot_ins_2021\\5829_Schekinoazot_ins_2021.FDB");
+	string req_list("Select id_main_tab, inv, subdiv_name, name from tab_techinfo where OS_photo is not null");
+	string req_photo("select OS_PHOTO from TAB_TECHINFO where id_main_tab = 520");
+	string username("SYSDBA");
+	string passw("masterkey");
+
+	//string req_photo("");
+	int id_mt;
+	string inv;
+	string subdiv_name;
+	string asset_name;
+	string items_list_name("items_list.csv");
+
+	void *a = new char[10000000];
+	
+	int *size = 0;
+	int *largest = 0;
+	int *segments = 0;
+
+	setlocale(LC_CTYPE, "rus");
+
+	/*cout << "Please enter server address: " << "\n";
+	cin >> srv;
+	cout << "Please enter db path: " << "\n";
+	cin >> pth;
+	cout << "Please enter username: " << "\n";
+	cin >> username;
+	cout << "Please enter password: " << "\n";
+	cin >> passw;*/
+
+	//cout << "Pleae enter path to database using DB Master format:\n";
+	try
+	{
+		ofstream items_file;
+		items_file.open(items_list_name);
+		items_file << "ID" << " ; " << "INV" << ";" << "SUBDIV_NAME" << " ; " << "NAME" << "\n";
+
+		IBPP::Database db = IBPP::DatabaseFactory(srv, pth, username, passw);
+		db->Connect();
+		IBPP::Transaction tr = IBPP::TransactionFactory(db);
+		tr->Start();
+
+		IBPP::Statement st = IBPP::StatementFactory(db, tr);
+		st->Execute(req_list);
+		while (st->Fetch())
+		{
+			st->Get(1, id_mt);
+			st->Get(2, inv);
+			st->Get(3, subdiv_name);
+			st->Get(4, asset_name);
+			cout << id_mt << " - " << inv << " - " << subdiv_name << " - " << asset_name.c_str() << "\n";
+			items_file << id_mt << " ; " << inv << " ; " << subdiv_name << " ; " << asset_name.c_str() << "\n";
+		}
+		cout << "Перечень активов, для которых есть фото, сохранён в файл " << items_list_name << "\n";
+		items_file.close();
+
+		ofstream photo_file;
+		photo_file.open("photo.jpg");
+
+		IBPP::Blob bl = BlobFactory(db, tr);
+		st->Execute(req_photo);
+		st->Fetch();
+		st->Get(1, bl);
+
+		bl->Open();
+
+		bl->Info(size, largest, segments);
+		cout << size << largest << segments;
+
+		while (bl->Read(a, 63999)) {
+			bl->Read(a, 63999);
+			photo_file << a;
+		}
+		
+
+		//ofstream wf("photo.jpg", ios::out | ios::binary);
+		//wf.write(bl);
+		//wf.close();
+		photo_file.close();
+
+		bl->Close();
+		
+
+
+		tr->Rollback();
+		db->Disconnect();
+		
+	}
+	catch (IBPP::Exception& e)
+	{
+		cout << e.ErrorMessage();
+	}
+
+	//cout << "Pleae enter asset ID:\n";
+	//cin >> assetId;
+	system("pause");
+	return 0;
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"

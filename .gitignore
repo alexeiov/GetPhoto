@@ -259,3 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/GetPhoto/items_list.csv
+/GetPhoto/items_list.txt
+/GetPhoto/photo.jpg
