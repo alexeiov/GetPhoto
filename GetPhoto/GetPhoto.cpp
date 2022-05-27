@@ -28,7 +28,7 @@ int main()
 	string asset_name;
 	string items_list_name("items_list.csv");
 
-	void *a = new char[10000000];
+	//void *a = new char[10000000];
 	
 	int *size = 0;
 	int *largest = 0;
