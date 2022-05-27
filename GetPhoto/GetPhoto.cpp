@@ -14,12 +14,12 @@ int main()
 {
 	int assetId = 0;
 	
-	string srv("192.168.115.202");
-	string pth("F:\\database\\5829_Schekinoazot_ins_2021\\5829_Schekinoazot_ins_2021.FDB");
-	string req_list("Select id_main_tab, inv, subdiv_name, name from tab_techinfo where OS_photo is not null");
+	string srv("");
+	string pth("");
+	string req_list("");
 	string req_photo("select OS_PHOTO from TAB_TECHINFO where id_main_tab = 520");
-	string username("SYSDBA");
-	string passw("masterkey");
+	string username("");
+	string passw("");
 
 	//string req_photo("");
 	int id_mt;
